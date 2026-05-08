@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: issue-tracker-server
+    env: node
+    plan: starter
+    buildCommand: npm install
+    startCommand: npm --workspace server run start
+    healthCheckPath: /api/health
+    healthCheckTimeout: 10
+

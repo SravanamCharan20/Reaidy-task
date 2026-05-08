@@ -7,7 +7,15 @@ export async function connectDb(uri) {
   globalThis.__mongooseState = state;
 
   if (state.conn) return state.conn;
-  if (!state.promise) state.promise = mongoose.connect(uri).then((m) => m.connection);
+  if (!state.promise) {
+    state.promise = mongoose
+      .connect(uri, {
+        serverSelectionTimeoutMS: 6000,
+        connectTimeoutMS: 6000,
+        maxPoolSize: 5
+      })
+      .then((m) => m.connection);
+  }
   state.conn = await state.promise;
   return state.conn;
 }

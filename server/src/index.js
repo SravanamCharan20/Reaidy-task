@@ -10,9 +10,17 @@ if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is required');
 
 const port = Number(process.env.PORT || 4000);
 
-await connectDb(process.env.MONGODB_URI);
 const app = createApp();
+
 app.listen(port, () => {
   console.log(`API listening on http://localhost:${port}`);
 });
+
+connectDb(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('MongoDB connected');
+  })
+  .catch((err) => {
+    console.error('MongoDB connection failed', err?.message || err);
+  });
 

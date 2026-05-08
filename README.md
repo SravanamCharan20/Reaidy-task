@@ -77,14 +77,22 @@ After seeding:
 - `GET /api/users` (admin)
 - `PATCH /api/users/:id/role` (admin)
 
-## Deploy backend on Vercel
+## Deploy backend on Render
 
-This backend can be deployed to Vercel as a serverless function.
+Render will run the Express server as a normal web service.
 
-- Ensure these environment variables are set in Vercel Project Settings:
-  - `MONGODB_URI`
-  - `JWT_SECRET`
-  - `CLIENT_ORIGIN` (your deployed frontend URL)
+1. Create a new **Web Service** (or import `render.yaml`).
+2. Build command: `npm install`
+3. Start command: `npm --workspace server run start`
+4. Set environment variables:
+   - `MONGODB_URI` (your MongoDB Atlas connection string)
+   - `JWT_SECRET` (any strong secret string)
+- `CLIENT_ORIGIN` (your deployed frontend URL, like `https://your-app.onrender.com` or `https://your-app.vercel.app`)
+   - `PORT` (optional)
 
-The Vercel entrypoint is `server/api/index.js`, and requests to `/api/*` are routed there via `vercel.json`.
+Health check endpoint: `GET /api/health`
+
+Note: MongoDB connection happens right after the server starts; the first few seconds may take time on cold start.
+
+After deploy, run `npm run seed` once locally (or create a one-off Render job) to create demo data.
 
