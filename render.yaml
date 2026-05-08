@@ -7,4 +7,11 @@ services:
     startCommand: npm --workspace server run start
     healthCheckPath: /api/health
     healthCheckTimeout: 10
+    envVars:
+      - key: CLIENT_ORIGIN
+        value: https://reaidy-task-client.vercel.app
+      - key: MONGODB_URI
+        value: mongodb+srv://code:code@cluster0.7ajkkpi.mongodb.net/?appName=Cluster0
+      - key: JWT_SECRET
+        value: dev-secret-change-me
 
