@@ -1,10 +1,40 @@
 import { createApp } from '../server/src/app.js';
 import { connectDb } from '../server/src/lib/db.js';
 
-if (!process.env.MONGODB_URI) throw new Error('MONGODB_URI is required');
-if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET is required');
+let isBootstrapped = false;
 
-await connectDb(process.env.MONGODB_URI);
+async function bootstrap() {
+  if (isBootstrapped) return;
 
-export default createApp();
+  const uri = process.env.MONGODB_URI;
+  const secret = process.env.JWT_SECRET;
+
+  if (!uri || !secret) {
+    const msg = 'Server configuration missing (MONGODB_URI or JWT_SECRET). Set them in Vercel env.';
+    console.error(msg);
+    throw new Error(msg);
+  }
+
+  await connectDb(uri);
+  isBootstrapped = true;
+}
+
+const app = createApp();
+
+export default async function handler(req, res) {
+  try {
+    await bootstrap();
+    return app(req, res);
+  } catch (err) {
+    console.error(err);
+    res.statusCode = 500;
+    res.setHeader('content-type', 'application/json');
+    res.end(
+      JSON.stringify({
+        error: 'Server configuration error',
+        message: 'Check server logs and environment variables on Vercel.'
+      })
+    );
+  }
+}
 
